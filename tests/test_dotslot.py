@@ -131,3 +131,20 @@ def test_markdown_emphasis_warning_and_code_span():
     _, iss = scan_text('Fill <./_____> and <./_____> here', 'a.md'); assert sum('emphasis' in i[3] for i in iss) == 2
     _, iss = scan_text('Fill `<./_____>` and `<./_____>` here', 'a.md'); assert not iss
     _, iss = scan_text('Fill <./     > here', 'a.md'); assert not iss
+
+def test_parse_sets_accepts_empty_unicode_and_equals_values():
+    from dotslot.cli import parse_sets
+
+    assert parse_sets(None) == {}
+    assert parse_sets(['title=', '状態=準備完了', 'formula=a=b']) == {
+        'title': '', '状態': '準備完了', 'formula': 'a=b',
+    }
+
+
+def test_parse_sets_rejects_values_without_a_name_value_separator():
+    import pytest
+    from dotslot.cli import parse_sets
+
+    with pytest.raises(SystemExit, match=r"--set needs name=value, got 'missing'"):
+        parse_sets(['missing'])
+
